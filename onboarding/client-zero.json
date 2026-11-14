@@ -1,0 +1,65 @@
+{
+  "slug": "emmanuel",
+  "name": "Emmanuel",
+  "shadowMode": true,
+  "demoMailbox": false,
+  "profile": {
+    "company": {
+      "name": "Emmanuel Naweji · Cloud & AI Architect",
+      "ownerName": "Emmanuel",
+      "timezone": "America/Chicago",
+      "website": "emmanuelnaweji.com",
+      "phone": "(605) 941-7280",
+      "voice": "warm, confident, plain words, outcomes first, never pushy"
+    },
+    "hours": {
+      "mon": { "open": "09:00", "close": "17:00" },
+      "tue": { "open": "09:00", "close": "17:00" },
+      "wed": { "open": "09:00", "close": "17:00" },
+      "thu": { "open": "09:00", "close": "17:00" },
+      "fri": { "open": "09:00", "close": "17:00" },
+      "sat": null,
+      "sun": null
+    },
+    "scheduling": { "slotMinutes": 30, "daysAhead": 7, "offer": 3 },
+    "categories": [
+      { "name": "AI check/booking", "keywords": ["ai check", "book", "call", "meeting", "30-minute", "30 minute", "schedule", "chat"], "reply": true, "scheduling": true },
+      { "name": "Assistant inquiry", "keywords": ["assistant", "super business assistant", "office manager", "inbox"], "reply": true, "scheduling": false },
+      { "name": "Review inquiry", "keywords": ["review", "cost & security", "cost and security", "audit", "cloud bill", "security review"], "reply": true, "scheduling": false },
+      { "name": "Speaking/training", "keywords": ["speak", "keynote", "training", "workshop", "conference", "panel"], "reply": true, "scheduling": false },
+      { "name": "T2S/course", "keywords": ["t2s", "transformed2succeed", "course", "membership", "class", "lesson"], "reply": true, "scheduling": false },
+      { "name": "BEMNAT/Kids-Teck", "keywords": ["bemnat", "kids-teck", "kids teck", "kids", "school"], "reply": true, "scheduling": false },
+      { "name": "Job/contract", "keywords": ["job", "role", "position", "recruiter", "contract", "c2c", "w2", "opportunity"], "reply": true, "scheduling": false },
+      { "name": "Invoice/payment", "keywords": ["invoice", "payment", "receipt", "paid", "refund", "billing"], "reply": true, "scheduling": false },
+      { "name": "Personal", "keywords": ["family", "dinner", "birthday", "church"], "reply": false, "scheduling": false },
+      { "name": "Junk", "keywords": ["unsubscribe", "winner", "prize", "seo services", "guest post"], "reply": false, "scheduling": false }
+    ],
+    "urgentKeywords": ["urgent", "asap", "today", "outage", "breach", "incident"],
+    "guardList": ["card", "ssn", "password", "bank_account"],
+    "alwaysEscalate": [
+      "legal", "lawyer", "attorney", "lawsuit", "subpoena",
+      "medical", "doctor", "diagnosis", "prescription",
+      "contract", "agreement", "nda", "statement of work", "sow", "terms",
+      "payment", "pay you", "wire", "deposit", "invoice", "refund", "discount",
+      "employer", "my employer", "your employer", "conflict of interest", "non-compete", "moonlighting", "exclusive"
+    ],
+    "approvers": [],
+    "budget": { "monthlyCapUsd": 50, "alertPercent": 80 },
+    "brief": { "time": "07:00", "radarWeekday": 1 },
+    "news": {
+      "keywords": ["AI cost optimization small business", "AI security small business", "cloud cost FinOps", "AI agents small business"],
+      "competitors": []
+    },
+    "signature": "Cheers,\nRev. Dr. Emmanuel Naweji\nCloud & AI Architect · Secure AI. Lower cost.\nSioux Falls, SD · (605) 941-7280 · emmanuelnaweji.com/assistant\nBook a free AI check: emmanuelnaweji.com/book"
+  },
+  "kb": [
+    {
+      "title": "Services",
+      "content": "AI Cost & Security Review: a review of how a business uses AI and cloud, finding wasted spend and security gaps, with a written plan. Starts from $5,000.\n\nSuper Business Assistant: an AI office manager for small businesses. It reads the inbox, guards sensitive data, sorts mail, drafts replies from the business's own knowledge base, and holds every draft for human approval. Nothing is sent without a human approving it. Learn more at emmanuelnaweji.com/assistant.\n\nFree 30-minute AI check: a free 30-minute call to look at where AI can save time or money. Book at emmanuelnaweji.com/book.\n\nT2S membership (Transformed2Succeed): $45 per month.\n\nSpeaking and training: talks and hands-on workshops on secure, lower-cost AI and cloud for teams, churches, schools and conferences. Fees and dates are confirmed personally by Emmanuel."
+    },
+    {
+      "title": "How to work with Emmanuel",
+      "content": "The best first step for any business question is the free 30-minute AI check at emmanuelnaweji.com/book.\n\nEmmanuel is based in Sioux Falls, SD, and works with clients remotely.\n\nPrices, contracts, start dates and availability for projects are confirmed personally by Emmanuel, not by the assistant."
+    }
+  ]
+}

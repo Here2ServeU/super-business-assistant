@@ -1,0 +1,30 @@
+{
+  "slug": "your-business-slug",
+  "name": "Your Business Name",
+  "shadowMode": true,
+  "demoMailbox": false,
+  "profile": {
+    "company": { "name": "Your Business Name", "ownerName": "", "timezone": "America/Chicago", "website": "", "phone": "", "voice": "warm, clear, brief, never pushy" },
+    "hours": {
+      "mon": { "open": "09:00", "close": "17:00" }, "tue": { "open": "09:00", "close": "17:00" }, "wed": { "open": "09:00", "close": "17:00" },
+      "thu": { "open": "09:00", "close": "17:00" }, "fri": { "open": "09:00", "close": "17:00" }, "sat": null, "sun": null
+    },
+    "scheduling": { "slotMinutes": 30, "daysAhead": 5, "offer": 3 },
+    "categories": [
+      { "name": "Booking", "keywords": ["book", "appointment", "schedule"], "reply": true, "scheduling": true },
+      { "name": "Question", "keywords": ["price", "hours", "how much", "do you"], "reply": true, "scheduling": false },
+      { "name": "Junk", "keywords": ["unsubscribe", "prize"], "reply": false, "scheduling": false }
+    ],
+    "urgentKeywords": ["emergency", "urgent"],
+    "guardList": ["card", "ssn", "password", "bank_account"],
+    "alwaysEscalate": ["refund", "lawyer", "attorney", "complaint", "contract"],
+    "approvers": [],
+    "budget": { "monthlyCapUsd": 20, "alertPercent": 80 },
+    "brief": { "time": "07:00", "radarWeekday": 1 },
+    "news": { "keywords": [], "competitors": [] },
+    "signature": "Thanks,\nYour Business Name"
+  },
+  "kb": [
+    { "title": "Services and prices", "content": "Write the facts the assistant may state here: services, prices, hours, area, policies." }
+  ]
+}
