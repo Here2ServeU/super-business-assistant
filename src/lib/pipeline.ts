@@ -48,7 +48,7 @@ export async function storeInbound(db: TenantDb, providerName: string, m: Inboun
 }
 
 // ------------------------------------------------------------------ sort
-const SortSchema = z.object({
+export const SortSchema = z.object({
   category: z.string(),
   urgent: z.boolean(),
   spam: z.boolean(),
@@ -109,7 +109,7 @@ async function sortMessage(db: TenantDb, profile: Profile, m: MessageRow): Promi
 }
 
 // ------------------------------------------------------------------ draft
-const DraftSchema = z.object({
+export const DraftSchema = z.object({
   can_answer: z.boolean(),
   reply: z.string(),
   used_source_ids: z.array(z.string()),
