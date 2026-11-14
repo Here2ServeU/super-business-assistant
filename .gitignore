@@ -1,6 +1,23 @@
+# secrets — never commit
 .env
+.env.*
+!.env.example
 credentials.json
 token.json
-*.db
+
+# node / next
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+
+# python v0
 __pycache__/
 .venv/
+*.db
+
+.DS_Store
