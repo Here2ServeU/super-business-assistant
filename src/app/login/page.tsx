@@ -22,6 +22,9 @@ export default function LoginPage() {
           <p className="mb-6 text-sm text-muted">Nothing is ever sent without your approval.</p>
           <LoginForm />
         </div>
+        <p className="mt-6 text-center text-sm text-muted">
+          New customer? <a href="/signup" className="font-medium text-navy underline decoration-orange">Create your account</a>
+        </p>
       </div>
     </main>
   );

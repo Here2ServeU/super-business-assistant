@@ -461,6 +461,30 @@ export const systemDb = {
     await sql`insert into tenant_members (tenant_id, user_id, role) values (${tenantId}, ${userId}, ${role})
       on conflict (tenant_id, user_id) do update set role = excluded.role`;
   },
+  /**
+   * Self-signup: create the user, their business (tenant + settings) and the owner
+   * membership in ONE transaction. Returns null when the email is already registered.
+   */
+  async createAccount(a: { email: string; name: string; passwordHash: string; businessName: string; slugBase: string; profile: Profile }) {
+    const sql = getSql();
+    const profile = ProfileSchema.parse(a.profile);
+    return sql.begin(async (tx) => {
+      const [u] = await tx<{ id: string }[]>`insert into users (email, name, password_hash) values (lower(${a.email}), ${a.name}, ${a.passwordHash})
+        on conflict (email) do nothing returning id`;
+      if (!u) return null;
+      const base = a.slugBase || "business";
+      const taken = await tx<{ slug: string }[]>`select slug from tenants where slug = ${base} or slug like ${base + "-%"}`;
+      const used = new Set(taken.map((r) => r.slug));
+      let slug = base;
+      for (let i = 2; used.has(slug); i++) slug = `${base}-${i}`;
+      const [t] = await tx<{ id: string }[]>`insert into tenants (slug, name) values (${slug}, ${a.businessName}) returning id`;
+      await tx`insert into tenant_settings (tenant_id, profile, shadow_mode) values (${t.id}, ${tx.json(profile as never)}, true)`;
+      await tx`insert into tenant_members (tenant_id, user_id, role) values (${t.id}, ${u.id}, 'owner')`;
+      await tx`insert into audit_log (tenant_id, actor, action, subject_id, detail)
+        values (${t.id}, ${mask(a.email)}, 'tenant_signed_up', ${t.id}, ${"self-signup; starts in shadow mode"})`;
+      return { userId: u.id, tenantId: t.id, slug };
+    });
+  },
   async ping() {
     const sql = getSql();
     const [row] = await sql<{ ok: number; vector: boolean }[]>`select 1 as ok, exists(select 1 from pg_extension where extname = 'vector') as vector`;
