@@ -72,6 +72,11 @@ npm test
 New customers go to **`/signup`**. In one step it creates their login and their business, and makes them its owner.
 - **Starting setup:** their business type picks starter categories, urgent words and always-escalate rules (`src/lib/starters.ts`).
 - **Safe by default:** every new business starts in **shadow mode**, with an empty cabinet and no mailbox, so nothing can be stated or sent until the owner adds their own facts, connects Gmail and turns sending on.
+- **Verification:** right after signup they must confirm their **email** (6-digit code or one-tap link, sent with Resend) and then their **mobile number** (6-digit text through Twilio Verify) on `/verify`. The app is locked until both are done.
+  - Codes are single-use, expire (15 min for email, 10 for text), allow 5 tries, are rate-limited, and are stored only as keyed hashes.
+  - Customers can fix a mistyped email or number on the same screen.
+  - On Vercel without `RESEND_*` and `TWILIO_*`, signup stops with "temporarily unavailable" rather than letting unverified accounts in. On a laptop, codes print to the server log.
+  - Logins created by the seed or onboarding scripts count as verified.
 - **Next steps:** afterwards they land on `/welcome`, a checklist that ticks itself off as they go.
 - **Access code:** set `SIGNUP_ACCESS_CODE` to make signup need a code. Send customers `https://<APP_URL>/signup?code=<code>` (the code is pre-filled).
 

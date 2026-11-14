@@ -9,7 +9,7 @@ import { NORTH_STAR_INBOX } from "@/lib/mail/demo-fixtures";
 
 const base = (over: Partial<SignupInput> = {}): SignupInput => ({
   name: "Dana Reyes", email: `dana+${Math.random().toString(36).slice(2)}@example.com`, password: "correct horse battery",
-  businessName: "Reyes Plumbing & Drain", businessType: "home_services", timezone: "America/Denver",
+  businessName: "Reyes Plumbing & Drain", businessType: "home_services", timezone: "America/Denver", mobile: "(605) 555-0199",
   phone: "(555) 010-2000", website: "reyesplumbing.example", accessCode: "", agree: "on", ...over,
 });
 
@@ -67,9 +67,9 @@ describe("Self-signup", () => {
   });
 
   it("validates every field and reports errors per field", async () => {
-    const r = await signUp(base({ name: "", email: "nope", password: "short", businessName: "", businessType: "spaceship" as never, timezone: "Mars/Base" as never, agree: "" as never }));
+    const r = await signUp(base({ name: "", email: "nope", password: "short", mobile: "12", businessName: "", businessType: "spaceship" as never, timezone: "Mars/Base" as never, agree: "" as never }));
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(["agree", "businessName", "businessType", "email", "name", "password", "timezone"]);
+    if (!r.ok) expect(Object.keys(r.errors).sort()).toEqual(["agree", "businessName", "businessType", "email", "mobile", "name", "password", "timezone"]);
   });
 
   it("requires the access code when SIGNUP_ACCESS_CODE is set", async () => {
