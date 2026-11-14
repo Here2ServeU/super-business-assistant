@@ -67,7 +67,15 @@ npm test
 
 44 tests, using a real Postgres and the North Star demo tenant. They cover the guard, the cabinet rule, architecture (DAL-only DB access), no-auto-send (source grep), intake/sort, masking in every table, the injection trap, "let me check" escalation, Spanish replies and messy threads. They also cover the send cases: approve sends once, edit sends only the edited text, reject and escalate send nothing, a draft left sitting sends nothing, a crash mid-send sends nothing until a human retries, four simultaneous approvals send once, a send with an unknown outcome is never retried, and viewers can't approve. Shadow mode, scheduling without double-booking (also refused by a Postgres exclusion constraint), the meter, the 80% alert and cap, pause/resume isolation, tenant isolation and the daily brief's 3–5 steps are tested too.
 
-## Onboard a new tenant
+## Customer signup
+
+New customers go to **`/signup`**. In one step it creates their login and their business, and makes them its owner.
+- **Starting setup:** their business type picks starter categories, urgent words and always-escalate rules (`src/lib/starters.ts`).
+- **Safe by default:** every new business starts in **shadow mode**, with an empty cabinet and no mailbox, so nothing can be stated or sent until the owner adds their own facts, connects Gmail and turns sending on.
+- **Next steps:** afterwards they land on `/welcome`, a checklist that ticks itself off as they go.
+- **Access code:** set `SIGNUP_ACCESS_CODE` to make signup need a code. Send customers `https://<APP_URL>/signup?code=<code>` (the code is pre-filled).
+
+## Onboard a new tenant (by hand)
 
 1. Copy `onboarding/template.json` to `onboarding/<business>.json` and fill it in: company basics, hours, categories (`reply`, `scheduling`), urgent words, guard list, always-escalate words, approvers, budget cap and alert %, brief time, radar weekday, news keywords, competitors, signature, and the KB documents (the only facts the assistant may state). New tenants should start with `"shadowMode": true`.
 2. `npm run onboard -- onboarding/<business>.json` (against the production `DATABASE_URL`). The command never overwrites an existing tenant.
