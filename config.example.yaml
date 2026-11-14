@@ -1,0 +1,63 @@
+# Super Business Assistant · client config. Copy to config.yaml and edit.
+business:
+  name: "North Star Heating & Air"
+  owner_name: "Jim"
+  timezone: "America/Chicago"
+  voice: "warm, clear, brief, never pushy"
+  signature: |
+    Thanks,
+    The North Star team
+
+# The lane: every recommendation is checked against this.
+lane:
+  services: ["Furnace and AC repair", "New system installs", "Water heaters", "Maintenance plans"]
+  not_offered: ["Commercial refrigeration", "Roofing", "Electrical panels"]
+  area: "Sioux Falls, Brandon, Harrisburg, Tea and Hartford"
+  ideal_customers: ["Homeowners", "Property managers"]
+  price_position: "Mid-range, honest pricing, no upsell pressure"
+  values: ["On time", "Family-owned", "Faith-friendly"]
+
+# The ONLY facts the assistant may state. Anything else: "a team member will follow up".
+approved_answers:
+  hours: "Mon–Fri 7 a.m.–6 p.m. Emergency no-heat calls answered 24/7."
+  service_area: "Sioux Falls, Brandon, Harrisburg, Tea and Hartford"
+  pricing: "A technician confirms the price after a diagnostic visit. New systems get a free written quote."
+  gas_safety: "If you smell gas, leave the house and call 911 and your gas company first."
+
+rules:
+  # Emails containing these always go to a person (no reply draft promises anything).
+  always_escalate: ["refund", "chargeback", "lawsuit", "attorney", "lawyer", "complaint", "cancel", "injury", "damage", "bbb", "review"]
+
+models:
+  quick: "claude-haiku-5-5"     # sorting and short tasks. Check current model names at docs.claude.com
+  smart: "claude-sonnet-5-5"    # drafting, briefing, recommendations
+
+# Example rates in USD per million tokens. Set these to your provider's current prices.
+pricing_per_million:
+  quick: {input: 1.0, output: 5.0}
+  smart: {input: 3.0, output: 15.0}
+
+budget:
+  monthly_usd: 20        # hard cap: AI stops and everything goes to a person when reached
+
+gmail:
+  query: "is:unread in:inbox newer_than:2d -category:promotions -category:social"
+  poll_seconds: 120
+  max_per_run: 10
+
+calendar:
+  work_start: "08:00"
+  work_end: "17:00"
+  slot_minutes: 30
+  days_ahead: 5
+
+briefing:
+  time: "06:00"          # local time, sent to Telegram
+
+news:
+  keywords: ["HVAC Sioux Falls", "furnace replacement South Dakota", "heat pump rebates"]
+
+radar:
+  weekday: 0             # 0 = Monday
+  competitors:
+    - {name: "Competitor A", website: "https://example.com"}

@@ -1,0 +1,77 @@
+# Preset: restaurant. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: Phillips Ave Kitchen (example)
+  owner_name: Chef
+  timezone: America/Chicago
+  voice: friendly, upbeat, brief
+  signature: 'See you soon,
+
+    The Phillips Ave Kitchen team'
+lane:
+  services:
+  - Dine-in
+  - Takeout
+  - Catering for 10–150 guests
+  - Private events
+  not_offered:
+  - Delivery outside downtown
+  - Food trucks
+  area: Downtown Sioux Falls and nearby
+  ideal_customers:
+  - Local families
+  - Office lunches
+  - Event planners
+  price_position: Casual, mid-range
+  values:
+  - Fresh, local ingredients
+  - Fast, friendly service
+approved_answers:
+  hours: Tue–Sun 11 a.m.–9 p.m. Closed Mondays.
+  reservations: We take reservations for parties of 6 or more. Smaller groups are walk-in.
+  catering: Catering for 10–150 guests. The manager confirms menu and price.
+  allergies: Our kitchen handles common allergens. Please tell your server about any allergy.
+rules:
+  always_escalate:
+  - refund
+  - sick
+  - food poisoning
+  - allergic reaction
+  - complaint
+  - health department
+  - lawsuit
+  - injury
+  - review
+  - cancel
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - Sioux Falls restaurant openings
+  - downtown Sioux Falls events
+  - restaurant industry trends
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com

@@ -1,0 +1,84 @@
+# Preset: law office. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: Minnehaha Legal Group (example)
+  owner_name: Attorney
+  timezone: America/Chicago
+  voice: professional, calm, clear
+  signature: 'Sincerely,
+
+    Minnehaha Legal Group'
+lane:
+  services:
+  - Family law
+  - Estate planning and wills
+  - Small business formation
+  - Real estate closings
+  not_offered:
+  - Criminal defense
+  - Immigration
+  - Patents
+  area: Minnehaha and Lincoln counties, South Dakota
+  ideal_customers:
+  - Families
+  - Small business owners
+  - Home buyers
+  price_position: Transparent flat fees where possible
+  values:
+  - Plain-English advice
+  - Prompt responses
+  - Confidentiality
+approved_answers:
+  hours: Mon–Fri 8:30 a.m.–5 p.m.
+  consultations: We offer initial consultations. Our team will confirm availability and any fee.
+  no_advice: The assistant can't give legal advice, and contacting us by email doesn't create an attorney-client relationship.
+  documents: Please don't send sensitive documents by email until an attorney has set up a secure way to share them.
+rules:
+  always_escalate:
+  - deadline
+  - court
+  - hearing
+  - subpoena
+  - served
+  - custody
+  - arrest
+  - divorce
+  - complaint
+  - refund
+  - fee
+  - malpractice
+  - bar
+  - urgent
+  - statute
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - South Dakota law changes
+  - Sioux Falls real estate market
+  - estate planning
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com

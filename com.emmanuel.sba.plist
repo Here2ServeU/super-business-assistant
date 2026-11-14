@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Keeps the assistant running on your Mac. Edit the two paths, then:
+     cp com.emmanuel.sba.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.emmanuel.sba.plist -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.emmanuel.sba</string>
+  <key>ProgramArguments</key><array>
+    <string>/Users/YOU/super-business-assistant/.venv/bin/python</string><string>main.py</string><string>run</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/YOU/super-business-assistant</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/tmp/sba.log</string>
+  <key>StandardErrorPath</key><string>/tmp/sba.err</string>
+</dict></plist>

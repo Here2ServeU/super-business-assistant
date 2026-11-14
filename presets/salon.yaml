@@ -1,0 +1,77 @@
+# Preset: salon. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: Falls Park Hair Studio (example)
+  owner_name: Owner
+  timezone: America/Chicago
+  voice: warm, stylish, personal
+  signature: 'See you in the chair,
+
+    Falls Park Hair Studio'
+lane:
+  services:
+  - Cuts and styling
+  - Color and highlights
+  - Bridal and event styling
+  - Kids' cuts
+  not_offered:
+  - Nails
+  - Medical skin treatments
+  area: Sioux Falls
+  ideal_customers:
+  - Busy professionals
+  - Brides
+  - Families
+  price_position: Mid to premium
+  values:
+  - Personal attention
+  - On time
+  - Welcoming to everyone
+approved_answers:
+  hours: Tue–Fri 9 a.m.–7 p.m., Sat 8 a.m.–3 p.m.
+  booking: Book online or reply here and we'll offer open times.
+  color: Color services start with a consultation so your stylist can confirm the price.
+  cancellation: Please give 24 hours' notice to cancel or reschedule.
+rules:
+  always_escalate:
+  - refund
+  - reaction
+  - burn
+  - allergic
+  - complaint
+  - redo
+  - unhappy
+  - review
+  - cancel
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - hair color trends
+  - Sioux Falls weddings
+  - salon industry
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com

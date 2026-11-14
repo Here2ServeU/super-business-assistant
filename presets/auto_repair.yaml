@@ -1,0 +1,74 @@
+# Preset: auto repair. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: 41st Street Auto Care (example)
+  owner_name: Owner
+  timezone: America/Chicago
+  voice: straight-talking, friendly
+  signature: 'Thanks,
+
+    41st Street Auto Care'
+lane:
+  services:
+  - Oil changes
+  - Brakes
+  - Diagnostics
+  - Tires and alignment
+  not_offered:
+  - Body work
+  - Paint
+  area: Sioux Falls
+  ideal_customers:
+  - Commuters
+  - Families
+  - Small fleets
+  price_position: Honest quotes before any work
+  values:
+  - No surprise bills
+  - Done when promised
+approved_answers:
+  hours: Mon–Fri 7:30 a.m.–6 p.m., Sat 8 a.m.–noon
+  quotes: We give a written quote after inspecting the vehicle. No work starts without your OK.
+  loaners: Ask about a ride to work when you drop off.
+rules:
+  always_escalate:
+  - refund
+  - warranty
+  - accident
+  - unsafe
+  - complaint
+  - damage
+  - review
+  - cancel
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - auto repair industry
+  - Sioux Falls road construction
+  - vehicle recalls
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com

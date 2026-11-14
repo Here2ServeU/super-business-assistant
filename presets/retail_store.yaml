@@ -1,0 +1,77 @@
+# Preset: retail store. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: Main Street Outfitters (example)
+  owner_name: Owner
+  timezone: America/Chicago
+  voice: friendly, helpful, quick
+  signature: 'Thanks for shopping local,
+
+    Main Street Outfitters'
+lane:
+  services:
+  - In-store shopping
+  - Online orders with local pickup
+  - Gift cards
+  - Special orders
+  not_offered:
+  - International shipping
+  - Repairs
+  area: Sioux Falls and the region
+  ideal_customers:
+  - Local shoppers
+  - Gift buyers
+  - Outdoor enthusiasts
+  price_position: Quality brands, fair prices
+  values:
+  - Shop local
+  - Expert, friendly help
+approved_answers:
+  hours: Mon–Sat 10 a.m.–7 p.m., Sun noon–5 p.m.
+  returns: Returns within 30 days with a receipt, in original condition.
+  pickup: Online orders are ready for pickup within 1 business day. We'll email you when it's ready.
+  stock: Our team checks stock and replies within one business day.
+rules:
+  always_escalate:
+  - refund
+  - chargeback
+  - damaged
+  - defective
+  - complaint
+  - lawsuit
+  - wholesale
+  - bulk order
+  - review
+  - cancel
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - Sioux Falls retail
+  - holiday shopping trends
+  - small business Saturday
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com

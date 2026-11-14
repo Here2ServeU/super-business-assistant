@@ -1,0 +1,88 @@
+# Preset: church. Copy to config.yaml, then replace every (example) value with the real business.
+business:
+  name: Riverbend Community Church (example)
+  owner_name: Pastor
+  timezone: America/Chicago
+  voice: warm, caring, hopeful, never preachy
+  signature: 'Blessings,
+
+    Riverbend Community Church'
+lane:
+  services:
+  - Sunday worship
+  - Youth and kids' ministry
+  - Food pantry
+  - Prayer and pastoral care
+  - Weddings and funerals
+  not_offered:
+  - Counseling for medical or legal issues
+  - Financial loans
+  area: Sioux Falls
+  ideal_customers:
+  - Families
+  - New residents
+  - Neighbors in need
+  price_position: Free; giving is voluntary
+  values:
+  - Welcome everyone
+  - Serve the city
+  - Confidential care
+approved_answers:
+  services: Sunday worship at 9:00 and 11:00 a.m.
+  youth: Youth night is Wednesdays at 6:30 p.m.
+  food_pantry: Food pantry is open Thursdays 4–6 p.m.
+  volunteers: New volunteers attend a 30-minute orientation first.
+  giving: Online giving is on our website. We never ask for card numbers by email.
+  crisis: If you or someone you love is in danger or thinking about suicide, call or text 988 (Suicide & Crisis Lifeline)
+    or call 911 right now. A pastor will also reach out.
+rules:
+  always_escalate:
+  - prayer
+  - pray
+  - funeral
+  - died
+  - death
+  - hospital
+  - sick
+  - crisis
+  - suicide
+  - abuse
+  - divorce
+  - counsel
+  - wedding
+  - pastor
+  - help me
+  - emergency
+models:
+  quick: claude-haiku-5-5
+  smart: claude-sonnet-5-5
+pricing_per_million:
+  quick:
+    input: 1.0
+    output: 5.0
+  smart:
+    input: 3.0
+    output: 15.0
+budget:
+  monthly_usd: 20
+gmail:
+  query: is:unread in:inbox newer_than:2d -category:promotions -category:social
+  poll_seconds: 120
+  max_per_run: 10
+calendar:
+  work_start: 08:00
+  work_end: '17:00'
+  slot_minutes: 30
+  days_ahead: 5
+briefing:
+  time: 06:00
+news:
+  keywords:
+  - Sioux Falls community events
+  - Sioux Falls food insecurity
+  - church ministry ideas
+radar:
+  weekday: 0
+  competitors:
+  - name: Competitor A
+    website: https://example.com
