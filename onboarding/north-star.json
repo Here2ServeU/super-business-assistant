@@ -1,0 +1,48 @@
+{
+  "slug": "north-star",
+  "name": "North Star Heating & Air",
+  "shadowMode": false,
+  "demoMailbox": true,
+  "profile": {
+    "company": {
+      "name": "North Star Heating & Air",
+      "ownerName": "Jim",
+      "timezone": "America/Chicago",
+      "website": "northstar.example",
+      "phone": "(605) 555-0142",
+      "voice": "warm, clear, brief, never pushy"
+    },
+    "hours": {
+      "mon": { "open": "07:00", "close": "18:00" },
+      "tue": { "open": "07:00", "close": "18:00" },
+      "wed": { "open": "07:00", "close": "18:00" },
+      "thu": { "open": "07:00", "close": "18:00" },
+      "fri": { "open": "07:00", "close": "18:00" },
+      "sat": { "open": "08:00", "close": "12:00" },
+      "sun": null
+    },
+    "scheduling": { "slotMinutes": 120, "daysAhead": 6, "offer": 3 },
+    "categories": [
+      { "name": "Booking", "keywords": ["book", "appointment", "schedule", "tune-up", "cita", "mantenimiento", "available", "come look"], "reply": true, "scheduling": true },
+      { "name": "Price question", "keywords": ["price", "cost", "charge", "how much", "quote", "precio"], "reply": true, "scheduling": false },
+      { "name": "Service question", "keywords": ["hours", "open", "serve", "service", "area", "install", "certified", "discount", "maintenance plan"], "reply": true, "scheduling": false },
+      { "name": "Emergency", "keywords": ["emergency", "no heat", "gas", "smell", "leak", "flood"], "reply": true, "scheduling": false },
+      { "name": "Complaint", "keywords": ["late", "disappointed", "refund", "unacceptable", "complaint"], "reply": true, "scheduling": false },
+      { "name": "Billing", "keywords": ["invoice", "payment", "pay", "charge my card"], "reply": true, "scheduling": false },
+      { "name": "Legal", "keywords": ["attorney", "lawsuit", "claim", "legal"], "reply": true, "scheduling": false },
+      { "name": "Junk", "keywords": ["unsubscribe", "won", "prize", "gift card"], "reply": false, "scheduling": false }
+    ],
+    "urgentKeywords": ["emergency", "no heat", "gas smell", "smell gas", "carbon monoxide", "flood", "leaking", "baby"],
+    "guardList": ["card", "ssn", "password", "bank_account"],
+    "alwaysEscalate": ["refund", "chargeback", "lawsuit", "attorney", "lawyer", "complaint", "cancel", "injury", "damage", "review", "bbb"],
+    "approvers": [],
+    "budget": { "monthlyCapUsd": 20, "alertPercent": 80 },
+    "brief": { "time": "06:00", "radarWeekday": 1 },
+    "news": {
+      "keywords": ["HVAC Sioux Falls", "heat pump rebates South Dakota"],
+      "competitors": []
+    },
+    "signature": "Thanks,\nThe North Star team\n(605) 555-0142 · northstar.example"
+  },
+  "kb": "demo"
+}
