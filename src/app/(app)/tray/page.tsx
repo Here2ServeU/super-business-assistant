@@ -13,7 +13,11 @@ export default async function TrayPage() {
   // approved/edited rows only appear when they were approved but never reached the mailbox (send failed).
   const unsent = [];
   for (const r of rows) {
-    if ((r.status === "approved" || r.status === "edited") && (settings.shadowMode || (await ctx.db.sentFor(r.id)))) continue;
+    if (r.status === "approved" || r.status === "edited") {
+      // Show only approvals that never reached the mailbox (no mailbox, or the send failed).
+      const st = (await ctx.db.sendState(r.id))?.status;
+      if (settings.shadowMode || (st && st !== "failed")) continue;
+    }
     unsent.push(r);
   }
   const items: TrayDraft[] = unsent.map((r) => ({

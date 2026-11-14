@@ -27,7 +27,13 @@ describe("No auto-send", () => {
     const send = a.indexOf("await provider.send(");
     expect(insertApproval).toBeGreaterThan(0);
     expect(send).toBeGreaterThan(insertApproval);
-    expect(a.slice(send - 400, send)).toContain("mintProof(db.tenantId, draft.id, approvalId)");
+    const proof = a.indexOf("mintProof(db.tenantId, draft.id, approvalId)");
+    const claim = a.indexOf("await db.claimSend(");
+    // approval recorded → proof minted → send claimed in the DB → mailbox called
+    expect(proof).toBeGreaterThan(insertApproval);
+    expect(claim).toBeGreaterThan(proof);
+    expect(send).toBeGreaterThan(claim);
+    expect(a.slice(claim, send)).toContain("if (!claimId) return");
   });
   it("every mailbox send endpoint is behind verifyProof()", () => {
     const p = readFileSync("src/lib/mail/providers.ts", "utf8");

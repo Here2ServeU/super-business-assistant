@@ -163,12 +163,27 @@ describe("Approval tray + send", () => {
     expect(await sentCount(ns.db)).toBe(1);
   });
 
-  it("two approvers clicking at the same moment send once", async () => {
-    const d = await draftFor(ns.db, "ns-002");
+  it("approvers clicking at the same moment send once (repeated to shake out races)", async () => {
     const second = await user("approver2@northstar.example", ns.db.tenantId, "approver");
-    const [a, b] = await Promise.all([approve(d.id), approve(d.id, second)]);
-    expect([a.sent, b.sent].filter(Boolean)).toHaveLength(1);
-    expect(ns.provider.sent).toHaveLength(1);
+    const ids = ["ns-002", "ns-011", "ns-012", "ns-013", "ns-008"];
+    for (const pid of ids) {
+      const d = await draftFor(ns.db, pid);
+      const results = await Promise.all([approve(d.id), approve(d.id, second), approve(d.id), approve(d.id, second)]);
+      expect(results.filter((r) => r.sent), pid).toHaveLength(1);
+    }
+    expect(ns.provider.sent).toHaveLength(ids.length);
+    expect(await sentCount(ns.db)).toBe(ids.length);
+  });
+
+  it("a send whose outcome is unknown (crash during the mailbox call) is never retried automatically", async () => {
+    const d = await draftFor(ns.db, "ns-002");
+    const hang = { ...ns.provider, send: () => new Promise<never>(() => {}) };
+    void decide(ns.db, hang, ns.owner, d.id, { kind: "approve" }); // never resolves: simulates a process killed mid-send
+    await new Promise((r) => setTimeout(r, 300));
+    expect((await ns.db.sendState(d.id))?.status).toBe("sending");
+    const retry = await approve(d.id);
+    expect(retry.sent).toBe(false);
+    expect(ns.provider.sent).toHaveLength(0);
   });
 
   it("viewers cannot approve", async () => {

@@ -233,20 +233,37 @@ export function tenantDb(tenantId: string, sql: Sql = getSql()) {
           and action in ('approve','edit_approve') order by created_at desc limit 1`;
       return row ?? null;
     },
-    async insertSent(s: { draftId: string; approvalId: string; provider: string; providerMessageId: string | null; toAddr: string; subject: string; body: string }) {
+    /** Atomically claim the right to send this draft. Returns null if another send holds or completed it. */
+    async claimSend(s: { draftId: string; approvalId: string; provider: string; toAddr: string; subject: string; body: string }) {
       const rows = await sql<{ id: string }[]>`
-        insert into sent_messages (tenant_id, draft_id, approval_id, provider, provider_message_id, to_addr, subject, body)
-        values (${t}, ${s.draftId}, ${s.approvalId}, ${s.provider}, ${s.providerMessageId}, ${s.toAddr}, ${s.subject}, ${s.body})
-        on conflict (draft_id) do nothing returning id`;
+        insert into sent_messages (tenant_id, draft_id, approval_id, provider, to_addr, subject, body, status)
+        values (${t}, ${s.draftId}, ${s.approvalId}, ${s.provider}, ${s.toAddr}, ${s.subject}, ${s.body}, 'sending')
+        on conflict (draft_id) do update set status = 'sending', approval_id = excluded.approval_id, body = excluded.body,
+          subject = excluded.subject, provider = excluded.provider, error = null, sent_at = now()
+          where sent_messages.status = 'failed' and sent_messages.tenant_id = ${t}
+        returning id`;
       return rows[0]?.id ?? null;
     },
+    async completeSend(id: string, providerMessageId: string | null) {
+      await sql`update sent_messages set status = 'sent', provider_message_id = ${providerMessageId}, sent_at = now() where tenant_id = ${t} and id = ${id}`;
+    },
+    async failSend(id: string, error: string) {
+      await sql`update sent_messages set status = 'failed', error = ${mask(error).slice(0, 500)} where tenant_id = ${t} and id = ${id}`;
+    },
+    /** The send record for a draft in any state (sending / sent / failed). */
+    async sendState(draftId: string) {
+      const [row] = await sql<{ id: string; status: "sending" | "sent" | "failed"; body: string }[]>`
+        select id, status, body from sent_messages where tenant_id = ${t} and draft_id = ${draftId}`;
+      return row ?? null;
+    },
+    /** Completed sends only. */
     async sentFor(draftId: string) {
-      const [row] = await sql<{ id: string; body: string }[]>`select id, body from sent_messages where tenant_id = ${t} and draft_id = ${draftId}`;
+      const [row] = await sql<{ id: string; body: string }[]>`select id, body from sent_messages where tenant_id = ${t} and draft_id = ${draftId} and status = 'sent'`;
       return row ?? null;
     },
     async listSent(limit = 100) {
       return sql<{ id: string; draft_id: string; to_addr: string; subject: string; body: string; sent_at: Date }[]>`
-        select id, draft_id, to_addr, subject, body, sent_at from sent_messages where tenant_id = ${t} order by sent_at desc limit ${limit}`;
+        select id, draft_id, to_addr, subject, body, sent_at from sent_messages where tenant_id = ${t} and status = 'sent' order by sent_at desc limit ${limit}`;
     },
 
     // ---------- calendar holds ----------
@@ -376,7 +393,7 @@ export function tenantDb(tenantId: string, sql: Sql = getSql()) {
           (select count(*)::int from messages where tenant_id = ${t} and received_at >= ${since}) as received,
           (select count(*)::int from drafts where tenant_id = ${t} and created_at >= ${since}) as drafted,
           (select count(*)::int from drafts where tenant_id = ${t} and status in ('pending','escalated')) as waiting,
-          (select count(*)::int from sent_messages where tenant_id = ${t} and sent_at >= ${since}) as sent,
+          (select count(*)::int from sent_messages where tenant_id = ${t} and status = 'sent' and sent_at >= ${since}) as sent,
           (select count(*)::int from drafts where tenant_id = ${t} and status = 'escalated') as escalated,
           (select count(*)::int from messages m where tenant_id = ${t} and urgent and status in ('drafted','escalated')) as urgent`;
       return row;

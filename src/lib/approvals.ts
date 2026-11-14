@@ -46,7 +46,10 @@ export async function decide(
     const settings = await tx.settings();
     const open = d.status === "pending" || d.status === "escalated";
     // A previous approval that never reached the mailbox (crash, outage) may be retried by a human.
-    const retry = (d.status === "approved" || d.status === "edited") && !(await tx.sentFor(d.id)) && (decision.kind === "approve" || decision.kind === "edit_approve");
+    const claim = await tx.sendState(d.id);
+    // Retry is allowed only when there is no send record (e.g. shadow / no mailbox) or the last attempt FAILED.
+    // A send that is in flight, or whose outcome is unknown, is never retried.
+    const retry = (d.status === "approved" || d.status === "edited") && (!claim || claim.status === "failed") && (decision.kind === "approve" || decision.kind === "edit_approve");
     if (!open && !retry) return { error: `This draft is already ${d.status}.` } as const;
 
     if (decision.kind === "reject" || decision.kind === "escalate") {
@@ -115,25 +118,29 @@ export async function decide(
   }
   const message = await db.message(draft.message_id);
   const proof = mintProof(db.tenantId, draft.id, approvalId);
+  // Claim the send in the database first: only one caller can hold the claim for a draft.
+  const claimId = await db.claimSend({ draftId: draft.id, approvalId, provider: provider.name, toAddr: draft.to_addr, subject: draft.subject, body: outgoing });
+  if (!claimId) return { ok: false, status: "approved", sent: false, message: "This reply is already sent or being sent." };
+  let providerMessageId: string | null;
   try {
-    if (await db.sentFor(draft.id)) return { ok: true, status: "sent", sent: false, message: "Already sent." };
-    const res = await provider.send({ to: draft.to_addr, subject: draft.subject, body: outgoing, threadId: message?.thread_id, inReplyToProviderId: message?.provider_message_id }, proof);
-    const sentId = await db.insertSent({ draftId: draft.id, approvalId, provider: provider.name, providerMessageId: res.providerMessageId, toAddr: draft.to_addr, subject: draft.subject, body: outgoing });
-    await db.updateDraft(draft.id, { status: "sent" });
-    if (message) await db.updateMessage(message.id, { status: "done" });
-    await db.audit("assistant", "sent", draft.id, `to ${draft.to_addr}: "${draft.subject}"${sentId ? "" : " (duplicate ignored)"}`);
-    for (const s of slots) {
-      try {
-        await provider.createHold({ start: new Date(s.start), end: new Date(s.end), title: draft.subject }, proof);
-      } catch (e) {
-        await db.audit("assistant", "calendar_hold_failed", draft.id, (e as Error).message);
-      }
-    }
-    return { ok: true, status: "sent", sent: true, message: "Approved and sent." };
+    ({ providerMessageId } = await provider.send({ to: draft.to_addr, subject: draft.subject, body: outgoing, threadId: message?.thread_id, inReplyToProviderId: message?.provider_message_id }, proof));
   } catch (e) {
+    await db.failSend(claimId, (e as Error).message);
     await db.audit("assistant", "send_failed", draft.id, (e as Error).message);
     return { ok: false, status: "approved", sent: false, message: `Approved, but sending failed: ${(e as Error).message}. Approve again to retry.` };
   }
+  await db.completeSend(claimId, providerMessageId);
+  await db.updateDraft(draft.id, { status: "sent" });
+  if (message) await db.updateMessage(message.id, { status: "done" });
+  await db.audit("assistant", "sent", draft.id, `to ${draft.to_addr}: "${draft.subject}"`);
+  for (const s of slots) {
+    try {
+      await provider.createHold({ start: new Date(s.start), end: new Date(s.end), title: draft.subject }, proof);
+    } catch (e) {
+      await db.audit("assistant", "calendar_hold_failed", draft.id, (e as Error).message);
+    }
+  }
+  return { ok: true, status: "sent", sent: true, message: "Approved and sent." };
 }
 
 class HoldConflict extends Error {
