@@ -15,10 +15,10 @@
     "vercel-build": "tsx scripts/migrate.ts && next build"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.17",
     "next": "16.4.6",
+    "openai": "^7.57.0",
     "postgres": "^4.1.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",

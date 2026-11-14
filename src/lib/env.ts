@@ -17,14 +17,14 @@ export const env = {
   authSecret: () => requireEnv("AUTH_SECRET"),
   encryptionKey: () => requireEnv("ENCRYPTION_KEY"),
   cronSecret: () => read("CRON_SECRET"),
-  anthropicKey: () => read("ANTHROPIC_API_KEY"),
-  aiProvider: (): "anthropic" | "offline" => {
+  openaiKey: () => read("OPENAI_API_KEY"),
+  aiProvider: (): "openai" | "offline" => {
     const forced = read("AI_PROVIDER");
-    if (forced === "offline" || forced === "anthropic") return forced;
-    return read("ANTHROPIC_API_KEY") ? "anthropic" : "offline";
+    if (forced === "offline" || forced === "openai") return forced;
+    return read("OPENAI_API_KEY") ? "openai" : "offline";
   },
-  modelSmall: () => read("MODEL_SMALL") ?? "claude-haiku-5-5",
-  modelLarge: () => read("MODEL_LARGE") ?? "claude-opus-5-5",
+  modelSmall: () => read("MODEL_SMALL") ?? "gpt-6-luna",
+  modelLarge: () => read("MODEL_LARGE") ?? "gpt-6.1-sol",
   googleClientId: () => read("GOOGLE_CLIENT_ID"),
   googleClientSecret: () => read("GOOGLE_CLIENT_SECRET"),
   appUrl: () => read("APP_URL") ?? (read("VERCEL_PROJECT_PRODUCTION_URL") ? `https://${read("VERCEL_PROJECT_PRODUCTION_URL")}` : "http://localhost:3000"),

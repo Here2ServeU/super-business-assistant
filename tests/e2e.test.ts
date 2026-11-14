@@ -237,13 +237,13 @@ describe("Meter, budget cap, /pause", () => {
   });
 
   it("alerts at 80% and pauses drafting at the cap", async () => {
-    await ns.db.insertUsage({ task: "draft", route: "large", model: "claude-opus-5-5", inputTokens: 0, outputTokens: 0, costUsd: 16.5 });
+    await ns.db.insertUsage({ task: "draft", route: "large", model: "gpt-6.1-sol", inputTokens: 0, outputTokens: 0, costUsd: 16.5 });
     await storeInbound(ns.db, "demo", { ...NORTH_STAR_INBOX[1], providerMessageId: "ns-200" });
     await processTenant(ns.db, null);
     expect(await ns.db.auditCount("budget_alert", new Date(0))).toBe(1);
     expect((await draftFor(ns.db, "ns-200")).status).toBe("pending"); // under the cap: still drafting
 
-    await ns.db.insertUsage({ task: "draft", route: "large", model: "claude-opus-5-5", inputTokens: 0, outputTokens: 0, costUsd: 4 });
+    await ns.db.insertUsage({ task: "draft", route: "large", model: "gpt-6.1-sol", inputTokens: 0, outputTokens: 0, costUsd: 4 });
     await storeInbound(ns.db, "demo", { ...NORTH_STAR_INBOX[1], providerMessageId: "ns-201" });
     await processTenant(ns.db, null);
     const m = (await ns.db.listMessages()).find((x) => x.provider_message_id === "ns-201")!;

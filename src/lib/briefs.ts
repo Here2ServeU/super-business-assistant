@@ -96,7 +96,7 @@ export function clampSteps(model: string[], base: string[]): string[] {
   return out.length >= 3 ? out : [...out, ...base].slice(0, 3);
 }
 
-const BriefSchema = z.object({ summary: z.string(), next_steps: z.array(z.string()) });
+export const BriefSchema = z.object({ summary: z.string(), next_steps: z.array(z.string()) });
 
 export async function buildBrief(db: TenantDb, opts: { radar?: boolean; fetcher?: Fetcher; now?: Date } = {}): Promise<BriefContent> {
   const settings = await db.settings();
