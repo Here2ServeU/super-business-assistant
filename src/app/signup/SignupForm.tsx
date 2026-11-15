@@ -46,6 +46,12 @@ export function SignupForm({ types, timezones, needsCode, defaultCode }: Props) 
           {err("email")}
         </label>
         <label className="block space-y-1">
+          <span className="label">Mobile number</span>
+          <input className="input" type="tel" name="mobile" autoComplete="tel" inputMode="tel" placeholder="(605) 555-0123" defaultValue={v.mobile} required {...aria("mobile")} />
+          <span className="block text-xs text-muted">We&apos;ll text you a code to confirm it. Standard message rates may apply.</span>
+          {err("mobile")}
+        </label>
+        <label className="block space-y-1">
           <span className="label">Password</span>
           <input className="input" type="password" name="password" autoComplete="new-password" minLength={10} required {...aria("password")} />
           <span className="block text-xs text-muted">At least 10 characters.</span>
@@ -103,6 +109,7 @@ export function SignupForm({ types, timezones, needsCode, defaultCode }: Props) 
           <li>✓ When you&apos;re ready to send, <strong>every reply still waits for your approval</strong>.</li>
           <li>✓ Card numbers, SSNs and passwords are removed before anything is saved.</li>
           <li>✓ You can pause everything at any time with <code>/pause</code>.</li>
+          <li>✓ Next, you&apos;ll confirm your email and your mobile number with a code.</li>
         </ul>
         <label className="mt-3 flex items-start gap-2">
           <input type="checkbox" name="agree" className="mt-1" {...aria("agree")} />

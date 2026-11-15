@@ -3,6 +3,8 @@ import { z } from "zod";
 import { systemDb } from "@/lib/dal";
 import { env } from "@/lib/env";
 import { STARTERS, TIMEZONES, starterProfile } from "@/lib/starters";
+import { emailChannel, smsChannel, VerificationUnavailable } from "@/lib/verify/channels";
+import { normalizePhone, sendEmailCode } from "@/lib/verify";
 
 // Self-serve signup for a customer who has decided to go ahead.
 // New businesses always start in SHADOW MODE (drafts only, nothing sends) with an
@@ -16,6 +18,11 @@ export const SignupSchema = z.object({
   businessName: z.string().trim().min(2, "Enter your business name.").max(120),
   businessType: z.enum(Object.keys(STARTERS) as [string, ...string[]], { message: "Pick your type of business." }),
   timezone: z.enum(TIMEZONES.map(([tz]) => tz) as [string, ...string[]], { message: "Pick your time zone." }),
+  mobile: z.string().trim().max(40).transform((v, ctx) => {
+    const p = normalizePhone(v);
+    if (!p) ctx.addIssue({ code: "custom", message: "Enter a mobile number that can get texts, like (605) 555-0123." });
+    return p ?? "";
+  }),
   phone: z.string().trim().max(40).default(""),
   website: z.string().trim().max(200).default(""),
   accessCode: z.string().trim().max(100).default(""),
@@ -37,15 +44,24 @@ export async function signUp(raw: SignupInput): Promise<SignupResult> {
     return { ok: false, errors };
   }
   const v = parsed.data;
+  // Don't create an account we can't verify.
+  try {
+    emailChannel();
+    smsChannel();
+  } catch (e) {
+    if (e instanceof VerificationUnavailable) return { ok: false, errors: { form: "Sign-up is temporarily unavailable while we finish setting up verification. Please try again soon." } };
+    throw e;
+  }
   const code = env.signupCode();
   if (code && v.accessCode !== code) return { ok: false, errors: { accessCode: "That access code isn't right. Check the email you got from us." } };
 
   const profile = starterProfile({ businessName: v.businessName, ownerName: v.name, type: v.businessType, timezone: v.timezone, phone: v.phone, website: v.website });
   profile.approvers = [{ name: v.name, email: v.email }];
   const created = await systemDb.createAccount({
-    email: v.email, name: v.name, passwordHash: await bcrypt.hash(v.password, 11),
+    email: v.email, name: v.name, passwordHash: await bcrypt.hash(v.password, 11), phone: v.mobile,
     businessName: v.businessName, slugBase: slugify(v.businessName), profile,
   });
   if (!created) return { ok: false, errors: { email: "An account with this email already exists. Sign in instead." } };
+  await sendEmailCode(created.userId, { force: true });
   return { ok: true, userId: created.userId, tenantId: created.tenantId };
 }

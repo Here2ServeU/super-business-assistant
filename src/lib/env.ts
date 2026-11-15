@@ -30,6 +30,9 @@ export const env = {
   appUrl: () => read("APP_URL") ?? (read("VERCEL_PROJECT_PRODUCTION_URL") ? `https://${read("VERCEL_PROJECT_PRODUCTION_URL")}` : "http://localhost:3000"),
   /** Optional. When set, /signup requires this access code (share it with customers who said yes). */
   signupCode: () => read("SIGNUP_ACCESS_CODE"),
+  twilioSid: () => read("TWILIO_ACCOUNT_SID"),
+  twilioToken: () => read("TWILIO_AUTH_TOKEN"),
+  twilioVerifyService: () => read("TWILIO_VERIFY_SERVICE_SID"),
   resendKey: () => read("RESEND_API_KEY"),
   notifyFrom: () => read("NOTIFY_FROM_EMAIL"),
 };

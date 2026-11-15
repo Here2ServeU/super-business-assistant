@@ -420,7 +420,8 @@ export const systemDb = {
   },
   async userById(id: string) {
     const sql = getSql();
-    const [row] = await sql<{ id: string; email: string; name: string }[]>`select id, email, name from users where id = ${id}`;
+    const [row] = await sql<{ id: string; email: string; name: string; email_verified_at: Date | null; phone_verified_at: Date | null }[]>`
+      select id, email, name, email_verified_at, phone_verified_at from users where id = ${id}`;
     return row ?? null;
   },
   async tenantsForUser(userId: string) {
@@ -440,8 +441,12 @@ export const systemDb = {
   },
   async upsertUser(u: { email: string; name: string; passwordHash: string }) {
     const sql = getSql();
-    const [row] = await sql<{ id: string }[]>`insert into users (email, name, password_hash) values (lower(${u.email}), ${u.name}, ${u.passwordHash})
-      on conflict (email) do update set name = excluded.name, password_hash = excluded.password_hash returning id`;
+    // Operator-created logins (seed / onboarding scripts) are trusted, so they count as verified.
+    const [row] = await sql<{ id: string }[]>`insert into users (email, name, password_hash, email_verified_at, phone_verified_at)
+      values (lower(${u.email}), ${u.name}, ${u.passwordHash}, now(), now())
+      on conflict (email) do update set name = excluded.name, password_hash = excluded.password_hash,
+        email_verified_at = coalesce(users.email_verified_at, now()), phone_verified_at = coalesce(users.phone_verified_at, now())
+      returning id`;
     return row.id;
   },
   /** Create (or update) a tenant from an onboarding profile. */
@@ -465,11 +470,11 @@ export const systemDb = {
    * Self-signup: create the user, their business (tenant + settings) and the owner
    * membership in ONE transaction. Returns null when the email is already registered.
    */
-  async createAccount(a: { email: string; name: string; passwordHash: string; businessName: string; slugBase: string; profile: Profile }) {
+  async createAccount(a: { email: string; name: string; passwordHash: string; phone: string; businessName: string; slugBase: string; profile: Profile }) {
     const sql = getSql();
     const profile = ProfileSchema.parse(a.profile);
     return sql.begin(async (tx) => {
-      const [u] = await tx<{ id: string }[]>`insert into users (email, name, password_hash) values (lower(${a.email}), ${a.name}, ${a.passwordHash})
+      const [u] = await tx<{ id: string }[]>`insert into users (email, name, password_hash, phone) values (lower(${a.email}), ${a.name}, ${a.passwordHash}, ${a.phone})
         on conflict (email) do nothing returning id`;
       if (!u) return null;
       const base = a.slugBase || "business";
@@ -484,6 +489,80 @@ export const systemDb = {
         values (${t.id}, ${mask(a.email)}, 'tenant_signed_up', ${t.id}, ${"self-signup; starts in shadow mode"})`;
       return { userId: u.id, tenantId: t.id, slug };
     });
+  },
+  // ---------- verification (users are global, not tenant data) ----------
+  async userVerification(userId: string) {
+    const sql = getSql();
+    const [row] = await sql<{ id: string; email: string; name: string; phone: string | null; email_verified_at: Date | null; phone_verified_at: Date | null }[]>`
+      select id, email, name, phone, email_verified_at, phone_verified_at from users where id = ${userId}`;
+    return row ?? null;
+  },
+  async insertCode(c: { userId: string; kind: "email" | "phone"; target: string; codeHash: string | null; tokenHash: string | null; expiresAt: Date }) {
+    const sql = getSql();
+    const [row] = await sql<{ id: string }[]>`insert into verification_codes (user_id, kind, target, code_hash, token_hash, expires_at)
+      values (${c.userId}, ${c.kind}, ${c.target}, ${c.codeHash}, ${c.tokenHash}, ${c.expiresAt}) returning id`;
+    return row.id;
+  },
+  async latestCode(userId: string, kind: "email" | "phone") {
+    const sql = getSql();
+    const [row] = await sql<{ id: string; target: string; code_hash: string | null; attempts: number; expires_at: Date; consumed_at: Date | null; created_at: Date }[]>`
+      select id, target, code_hash, attempts, expires_at, consumed_at, created_at from verification_codes
+      where user_id = ${userId} and kind = ${kind} order by created_at desc limit 1`;
+    return row ?? null;
+  },
+  async codesSentSince(userId: string, kind: "email" | "phone", since: Date) {
+    const sql = getSql();
+    const [row] = await sql<{ n: number }[]>`select count(*)::int as n from verification_codes where user_id = ${userId} and kind = ${kind} and created_at >= ${since}`;
+    return row.n;
+  },
+  async bumpAttempts(codeId: string) {
+    const sql = getSql();
+    const [row] = await sql<{ attempts: number }[]>`update verification_codes set attempts = attempts + 1 where id = ${codeId} returning attempts`;
+    return row?.attempts ?? 0;
+  },
+  /** Marks a code used. Returns false if it was already used (one-time). */
+  async consumeCode(codeId: string) {
+    const sql = getSql();
+    const rows = await sql`update verification_codes set consumed_at = now() where id = ${codeId} and consumed_at is null returning id`;
+    return rows.length === 1;
+  },
+  async codeByToken(tokenHash: string) {
+    const sql = getSql();
+    const [row] = await sql<{ id: string; user_id: string; target: string; expires_at: Date; consumed_at: Date | null }[]>`
+      select id, user_id, target, expires_at, consumed_at from verification_codes where token_hash = ${tokenHash} and kind = 'email'`;
+    return row ?? null;
+  },
+  /** Only verifies if the address is still the one on the account (a code sent to an old address can't verify a new one). */
+  async markEmailVerified(userId: string, email: string) {
+    const sql = getSql();
+    const rows = await sql`update users set email_verified_at = now() where id = ${userId} and lower(email) = lower(${email}) returning id`;
+    return rows.length === 1;
+  },
+  async markPhoneVerified(userId: string, phone: string) {
+    const sql = getSql();
+    const rows = await sql`update users set phone_verified_at = now() where id = ${userId} and phone = ${phone} returning id`;
+    return rows.length === 1;
+  },
+  async setPhone(userId: string, phone: string) {
+    const sql = getSql();
+    await sql`update users set phone = ${phone}, phone_verified_at = null where id = ${userId}`;
+  },
+  /** Change an unverified account's email. Returns false if another account already uses it. */
+  async changeEmail(userId: string, email: string) {
+    const sql = getSql();
+    try {
+      await sql`update users set email = lower(${email}), email_verified_at = null where id = ${userId}`;
+      return true;
+    } catch (e) {
+      if ((e as { code?: string }).code === "23505") return false;
+      throw e;
+    }
+  },
+  /** Write the same logbook entry into every business this user belongs to. */
+  async auditForUser(userId: string, action: string, detail: string) {
+    const sql = getSql();
+    await sql`insert into audit_log (tenant_id, actor, action, subject_id, detail)
+      select m.tenant_id, ${mask(detail.split(" ")[0])}, ${action}, ${userId}, ${mask(detail)} from tenant_members m where m.user_id = ${userId}`;
   },
   async ping() {
     const sql = getSql();

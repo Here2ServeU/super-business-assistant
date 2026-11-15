@@ -14,8 +14,15 @@ const src = files("src").map((f) => ({ f, text: readFileSync(f, "utf8") }));
 
 describe("No auto-send", () => {
   it("provider.send() is called from exactly one place: src/lib/approvals.ts", () => {
-    const callers = src.filter(({ f, text }) => /\bprovider\.send\(|\bmailer\.send\(|\.send\(\s*\{\s*to:/.test(text) && !f.endsWith(path.join("mail", "types.ts")));
+    // src/lib/verify sends signup codes to the ACCOUNT HOLDER through Resend/Twilio, never through a
+    // business's mailbox; the next test proves it can't reach one.
+    const callers = src.filter(({ f, text }) => /\bprovider\.send\(|\bmailer\.send\(|\.send\(\s*\{\s*to:/.test(text) && !f.endsWith(path.join("mail", "types.ts")) && !f.startsWith(path.join("src", "lib", "verify")));
     expect(callers.map((c) => c.f)).toEqual([path.join("src", "lib", "approvals.ts")]);
+  });
+  it("signup verification can't touch a business mailbox", () => {
+    for (const { f, text } of src.filter(({ f }) => f.startsWith(path.join("src", "lib", "verify")))) {
+      expect(text, f).not.toMatch(/@\/lib\/mail|providerFor|gmailProvider|ApprovalProof|tenantDb\(/);
+    }
   });
   it("only approvals.ts can mint an ApprovalProof", () => {
     const minters = src.filter(({ text }) => /as ApprovalProof/.test(text)).map((c) => c.f);

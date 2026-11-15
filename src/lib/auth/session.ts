@@ -52,7 +52,7 @@ export async function currentUser() {
 const RANK: Record<Role, number> = { viewer: 0, approver: 1, owner: 2 };
 
 export interface AppContext {
-  user: { id: string; email: string; name: string };
+  user: { id: string; email: string; name: string; email_verified_at: Date | null; phone_verified_at: Date | null };
   tenant: { id: string; slug: string; name: string };
   role: Role;
   tenants: { id: string; slug: string; name: string; role: Role }[];
@@ -66,6 +66,8 @@ export interface AppContext {
 export async function requireContext(minRole: Role = "viewer"): Promise<AppContext> {
   const user = await currentUser();
   if (!user) redirect("/login");
+  // Nobody uses the app until their email and mobile number are confirmed.
+  if (!user.email_verified_at || !user.phone_verified_at) redirect("/verify");
   const tenants = await systemDb.tenantsForUser(user.id);
   if (!tenants.length) redirect("/login?error=no-tenant");
   const jar = await cookies();

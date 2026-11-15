@@ -4,7 +4,8 @@ import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = { title: "Sign in" };
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ notice?: string }> }) {
+  const { notice } = await searchParams;
   return (
     <main className="flex min-h-screen flex-col">
       <header className="bg-navy px-4 py-6 text-white">
@@ -20,6 +21,7 @@ export default function LoginPage() {
         <div className="card p-6">
           <h1 className="mb-1 text-xl font-bold">Sign in</h1>
           <p className="mb-6 text-sm text-muted">Nothing is ever sent without your approval.</p>
+          {notice === "email-confirmed" && <p className="mb-4 rounded-lg bg-warm px-3 py-2 text-sm font-medium text-ok">Email confirmed. Sign in to confirm your mobile number.</p>}
           <LoginForm />
         </div>
         <p className="mt-6 text-center text-sm text-muted">
